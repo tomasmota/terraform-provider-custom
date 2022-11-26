@@ -8,6 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 var (
@@ -20,6 +21,13 @@ func New() provider.Provider {
 
 type hashicupsProvider struct{}
 
+// hashicupsProviderModel maps provider schema data to a Go type.
+type hashicupsProviderModel struct {
+	Host     types.String `tfsdk:"host"`
+	Username types.String `tfsdk:"username"`
+	Password types.String `tfsdk:"password"`
+}
+
 // Metadata returns the provider type name.
 func (p *hashicupsProvider) Metadata(_ context.Context, _ provider.MetadataRequest, resp *provider.MetadataResponse) {
 	resp.TypeName = "hashicups"
@@ -27,7 +35,23 @@ func (p *hashicupsProvider) Metadata(_ context.Context, _ provider.MetadataReque
 
 // GetSchema defines the provider-level schema for configuration data.
 func (p *hashicupsProvider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{}, nil
+	return tfsdk.Schema{
+		Attributes: map[string]tfsdk.Attribute{
+			"host": {
+				Type:     types.StringType,
+				Optional: true,
+			},
+			"username": {
+				Type:     types.StringType,
+				Optional: true,
+			},
+			"password": {
+				Type:      types.StringType,
+				Optional:  true,
+				Sensitive: true,
+			},
+		},
+	}, nil
 }
 
 // Configure prepares a HashiCups API client for data sources and resources.
